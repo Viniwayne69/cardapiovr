@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Cardápio</title>
+  <meta name="description" content="Cardápio digital com realidade aumentada: veja o prato em 3D, em tamanho real, em cima da sua mesa.">
+  <meta name="theme-color" content="#17100B">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23F2B33D' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='24' height='24' rx='6' fill='%2317100B' stroke='none'/%3E%3Cg transform='translate(3 3) scale(.75)'%3E%3Cpath d='M5 11a7 7 0 0 1 14 0z'/%3E%3Crect x='3.5' y='13' width='17' height='2.6' rx='1.3'/%3E%3Cpath d='M5 17.9h14c0 1.5-1 2.6-2.6 2.6H7.6C6 20.5 5 19.4 5 17.9z'/%3E%3C/g%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Visualizador 3D e AR do Google, versão fixada -->
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <div class="app" id="app" data-view="menu">
+    <header class="hero" id="hero">
+      <p class="hero__mesa" id="mesa" hidden></p>
+      <div class="hero__logo" id="logo" aria-hidden="true"></div>
+      <h1 class="hero__name" id="name">&nbsp;</h1>
+      <p class="hero__tagline" id="tagline"></p>
+      <p class="hero__hint" id="hint"></p>
+    </header>
+
+    <div class="tabs-wrap" id="tabsWrap">
+      <nav class="tabs" id="tabs" aria-label="Categorias do cardápio"></nav>
+    </div>
+
+    <main id="main">
+      <section class="view" data-view="menu" id="view-menu" aria-label="Cardápio">
+        <div id="menuList">
+          <div class="sk" aria-hidden="true"><span></span><span></span><span></span></div>
+        </div>
+      </section>
+      <section class="view" data-view="about" id="view-about" hidden></section>
+      <section class="view" data-view="contact" id="view-contact" hidden></section>
+    </main>
+
+    <nav class="nav" id="nav" aria-label="Navegação principal">
+      <a class="nav__item" href="#/" data-view="menu" aria-current="page"><span data-icon="menu"></span><span>Cardápio</span></a>
+      <a class="nav__item" href="#/sobre" data-view="about"><span data-icon="info"></span><span>Sobre</span></a>
+      <a class="nav__item" href="#/contato" data-view="contact"><span data-icon="phone"></span><span>Contato</span></a>
+    </nav>
+  </div>
+
+  <!-- Detalhe do prato -->
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" aria-hidden="true" inert>
+    <div class="sheet__backdrop" data-close></div>
+    <div class="sheet__panel">
+      <div class="sheet__bar">
+        <button type="button" class="icon-btn" id="sheetBack" data-close aria-label="Voltar ao cardápio"><span data-icon="back"></span></button>
+        <button type="button" class="icon-btn" id="sheetShare" aria-label="Compartilhar este prato"><span data-icon="share"></span></button>
+      </div>
+
+      <div class="sheet__scroll" id="sheetScroll">
+        <div class="stage" id="stage">
+          <div class="stage__loading" id="stageLoading" role="status">
+            <span class="spinner" aria-hidden="true"></span>
+            <span>Carregando o 3D…</span>
+          </div>
+          <div class="stage__error" id="stageError" role="alert" hidden>
+            <p>Não foi possível carregar o modelo 3D</p>
+            <button type="button" class="btn-ghost" id="retryModel">Tentar de novo</button>
+          </div>
+          <div class="stage__hint" id="stageHint" aria-hidden="true">
+            <span data-icon="rotateL" data-size="20"></span>
+            <span>Gire com o dedo</span>
+            <span data-icon="rotateR" data-size="20"></span>
+          </div>
+          <div class="progress" id="progress" aria-hidden="true"><span id="progressBar"></span></div>
+        </div>
+        <div class="info" id="sheetInfo"></div>
+      </div>
+
+      <div class="sheet__cta">
+        <button type="button" class="cta is-wait" id="arBtn" aria-disabled="true">
+          <span data-icon="cube" data-size="24"></span>
+          <span>Ver na mesa</span>
+        </button>
+      </div>
+
+      <p class="coach" id="coach" role="status"></p>
+      <p class="toast" id="toast" role="status"></p>
+    </div>
+  </div>
+
+  <noscript><p style="padding:24px;text-align:center">Ative o JavaScript para ver o cardápio.</p></noscript>
+</body>
+</html>
