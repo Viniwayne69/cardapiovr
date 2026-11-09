@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>QR code das mesas · Cardápio AR</title>
+  <style>
+    :root {
+      --ink: #1b1209;
+      --muted: #6f6254;
+      --line: #e6ddd0;
+      --bg: #f6f1ea;
+      --primary: #e8571f;
+      --accent: #f2b33d;
+      --font-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+      --font-body: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: var(--font-body); color: var(--ink); background: var(--bg); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+    h1, h2, p { margin: 0; }
+
+    .layout { display: grid; grid-template-columns: 340px 1fr; min-height: 100vh; }
+    @media (max-width: 820px) { .layout { grid-template-columns: 1fr; } }
+
+    .panel { padding: 28px 24px; background: #fff; border-right: 1px solid var(--line); position: sticky; top: 0; align-self: start; max-height: 100vh; overflow: auto; }
+    @media (max-width: 820px) { .panel { position: static; max-height: none; border-right: 0; border-bottom: 1px solid var(--line); } }
+    .panel h1 { font: 800 24px/1.1 var(--font-display); letter-spacing: -0.02em; }
+    .panel .lead { margin-top: 8px; color: var(--muted); font-size: 14px; }
+
+    form { margin-top: 22px; display: grid; gap: 16px; }
+    label { display: grid; gap: 6px; font-size: 13px; font-weight: 600; }
+    label small { font-weight: 400; color: var(--muted); }
+    input { font: inherit; font-weight: 400; padding: 11px 13px; border: 1px solid var(--line); border-radius: 10px; background: #fff; width: 100%; }
+    input:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .actions { display: grid; gap: 10px; margin-top: 4px; }
+    button { font: inherit; font-weight: 700; padding: 13px 16px; border-radius: 999px; border: 0; cursor: pointer; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-ghost { background: transparent; border: 1px solid var(--line); color: var(--ink); }
+
+    .warn { margin-top: 18px; padding: 12px 14px; border-radius: 12px; background: #fff4d6; border: 1px solid #f0d98c; font-size: 13px; }
+    .link { margin-top: 18px; font-size: 12px; color: var(--muted); word-break: break-all; }
+    .link strong { display: block; color: var(--ink); font-size: 13px; margin-bottom: 2px; }
+
+    .preview { padding: 32px; }
+    @media (max-width: 820px) { .preview { padding: 20px 12px; } }
+    .sheet { display: grid; grid-template-columns: repeat(auto-fill, minmax(88mm, 1fr)); gap: 24px; justify-items: center; }
+
+    .tent {
+      width: 88mm;
+      min-height: 124mm;
+      background: #fff;
+      border: 1px dashed #cfc3b3;
+      border-radius: 6mm;
+      padding: 8mm 7mm 7mm;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      break-inside: avoid;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .tent::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3mm; background: var(--primary); }
+    .tent__brand { font: 800 8mm/1 var(--font-display); letter-spacing: -0.02em; margin-top: 2mm; }
+    .tent__tag { margin-top: 1.5mm; font: 700 3.4mm/1.2 var(--font-display); color: var(--primary); }
+    .tent__title { margin-top: 5mm; font: 700 4.6mm/1.2 var(--font-display); }
+    .tent__qr { margin-top: 4mm; width: 52mm; padding: 2.5mm; border: 0.4mm solid var(--ink); border-radius: 4mm; background: #fff; }
+    .tent__qr svg { display: block; width: 100%; height: auto; }
+    .tent__cap { margin-top: 3.5mm; font-size: 3.3mm; line-height: 1.35; color: var(--muted); max-width: 62mm; }
+    .tent__mesa { margin-top: auto; padding-top: 4mm; font: 800 6mm/1 var(--font-display); color: var(--ink); }
+    .tent__mesa span { display: inline-block; padding: 1.5mm 5mm; border-radius: 99px; background: var(--accent); }
+
+    @media print {
+      @page { size: A4; margin: 10mm; }
+      body { background: #fff; }
+      .panel { display: none; }
+      .layout { display: block; }
+      .preview { padding: 0; }
+      .sheet { grid-template-columns: repeat(2, 88mm); gap: 8mm; justify-content: center; }
+      .tent { border-color: #bbb; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="panel">
+      <h1>QR code das mesas</h1>
+      <p class="lead">Gere e imprima os cartões que ficam na mesa. O cliente escaneia e abre o cardápio no navegador, sem instalar nada.</p>
+
+      <form id="form" autocomplete="off">
+        <label>
+          Restaurante
+          <input id="slug" name="slug" value="smash-lab" pattern="[a-z0-9\-]+" required>
+          <small>Nome da pasta em data/restaurants</small>
+        </label>
+        <label>
+          Endereço público do cardápio
+          <input id="base" name="base" inputmode="url" required>
+          <small>Ex.: https://cardapio-ar-demo.vercel.app</small>
+        </label>
+        <div class="row">
+          <label>
+            Mesa inicial
+            <input id="mesa" name="mesa" type="number" min="1" max="999" placeholder="1">
+          </label>
+          <label>
+            Quantidade
+            <input id="qty" name="qty" type="number" min="1" max="60" value="1">
+          </label>
+        </div>
+        <small style="color:var(--muted)">Deixe a mesa em branco para gerar um QR único, sem número.</small>
+
+        <div class="actions">
+          <button class="btn-primary" type="button" id="print">Imprimir cartões</button>
+          <button class="btn-ghost" type="button" id="download">Baixar o primeiro QR (SVG)</button>
+        </div>
+      </form>
+
+      <p class="warn" id="warn" hidden></p>
+      <p class="link"><strong>Link do primeiro QR</strong><span id="link"></span></p>
+    </aside>
+
+    <main class="preview"><div class="sheet" id="sheet" aria-live="polite"></div></main>
+  </div>
+
+  <script type="module">
+    import { encodeQR, qrToSvg } from './js/qr.js';
+    import { loadFonts } from './js/ui.js';
+
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+    const KEY = 'cardapio-ar:qr-base';
+    const read = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
+    const write = (k, v) => { try { localStorage.setItem(k, v); } catch { /* sem armazenamento */ } };
+
+    const state = { menu: null, slug: null, firstSvg: '' };
+
+    $('base').value = read(KEY) || new URL('./', location.href).href.replace(/\/$/, '');
+
+    function cardUrl(base, slug, mesa) {
+      const u = new URL(base);
+      u.search = '';
+      u.hash = '';
+      u.searchParams.set('r', slug);
+      if (mesa) u.searchParams.set('mesa', String(mesa));
+      return u.href;
+    }
+
+    async function loadRestaurant(slug) {
+      if (state.slug === slug) return;
+      state.slug = slug;
+      state.menu = null;
+      try {
+        const res = await fetch(`data/restaurants/${slug}/menu.json`, { cache: 'no-cache' });
+        if (res.ok) state.menu = await res.json();
+      } catch { /* usa os padrões */ }
+      const t = state.menu?.theme;
+      if (t) {
+        const root = document.documentElement.style;
+        if (t.primary) root.setProperty('--primary', t.primary);
+        if (t.accent) root.setProperty('--accent', t.accent);
+        if (t.fontDisplay) root.setProperty('--font-display', `"${t.fontDisplay}", ui-sans-serif, system-ui, sans-serif`);
+        if (t.fontBody) root.setProperty('--font-body', `"${t.fontBody}", ui-sans-serif, system-ui, sans-serif`);
+        await loadFonts(t);
+      }
+    }
+
+    async function render() {
+      const slug = $('slug').value.trim().toLowerCase();
+      const baseRaw = $('base').value.trim();
+      const warn = $('warn');
+      let base;
+      try {
+        base = new URL(/^https?:\/\//i.test(baseRaw) ? baseRaw : `https://${baseRaw}`);
+      } catch {
+        $('sheet').innerHTML = '';
+        $('link').textContent = '';
+        warn.hidden = false;
+        warn.textContent = 'Confira o endereço do cardápio.';
+        return;
+      }
+      if (!/^[a-z0-9-]+$/.test(slug)) return;
+      write(KEY, base.origin + base.pathname.replace(/\/$/, ''));
+
+      await loadRestaurant(slug);
+      const name = state.menu?.name ?? slug;
+      const tagline = state.menu?.tagline ?? '';
+
+      const local = /^(localhost|127\.|10\.|192\.168\.|\[::1\])/.test(base.hostname);
+      warn.hidden = !(local || base.protocol !== 'https:');
+      warn.textContent = local
+        ? 'Este endereço só funciona neste computador ou na sua rede. Cole o endereço público do site (https) para gerar o QR definitivo.'
+        : 'O AR exige HTTPS. Use o endereço que começa com https://.';
+
+      const start = parseInt($('mesa').value, 10);
+      const qty = Math.min(60, Math.max(1, parseInt($('qty').value, 10) || 1));
+      const mesas = Number.isFinite(start) && start > 0 ? Array.from({ length: qty }, (_, i) => start + i) : [null];
+
+      const cards = mesas.map((mesa, i) => {
+        const url = cardUrl(base.href, slug, mesa);
+        const svg = qrToSvg(encodeQR(url, 'Q'), { quiet: 2, label: `QR code do cardápio${mesa ? `, mesa ${mesa}` : ''}` });
+        if (i === 0) {
+          state.firstSvg = qrToSvg(encodeQR(url, 'Q'), { quiet: 4 });
+          $('link').textContent = url;
+        }
+        return `
+          <article class="tent">
+            <h2 class="tent__brand">${esc(name)}</h2>
+            ${tagline ? `<p class="tent__tag">${esc(tagline)}</p>` : ''}
+            <p class="tent__title">Veja o prato em 3D na sua mesa</p>
+            <div class="tent__qr">${svg}</div>
+            <p class="tent__cap">Aponte a câmera do celular para o QR code, sem baixar nenhum aplicativo</p>
+            ${mesa ? `<p class="tent__mesa"><span>Mesa ${mesa}</span></p>` : ''}
+          </article>`;
+      });
+      $('sheet').innerHTML = cards.join('');
+    }
+
+    $('form').addEventListener('input', render);
+    $('form').addEventListener('submit', (e) => e.preventDefault());
+    $('print').addEventListener('click', () => window.print());
+    $('download').addEventListener('click', () => {
+      const blob = new Blob([state.firstSvg], { type: 'image/svg+xml' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `qr-${state.slug}.svg`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    });
+
+    render();
+  </script>
+</body>
+</html>
