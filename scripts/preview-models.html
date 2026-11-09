@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prévia dos modelos 3D</title>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+  <style>
+    body { margin: 0; background: #17100b; color: #f8eedf; font: 14px system-ui, sans-serif; display: flex; flex-direction: column; height: 100vh; }
+    nav { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px; }
+    button { background: #2b1f17; color: inherit; border: 1px solid #4a3828; border-radius: 999px; padding: 6px 12px; cursor: pointer; }
+    button.on { background: #e8571f; border-color: #e8571f; }
+    model-viewer { flex: 1; width: 100%; --poster-color: transparent; }
+    #info { padding: 6px 12px; opacity: .7 }
+  </style>
+</head>
+<body>
+  <nav id="nav"></nav>
+  <model-viewer id="mv" camera-controls auto-rotate shadow-intensity="1" exposure="1.05" environment-image="neutral" camera-orbit="30deg 70deg auto"></model-viewer>
+  <div id="info"></div>
+  <script type="module">
+    const params = new URLSearchParams(location.search);
+    const slug = params.get('r') || 'smash-lab';
+    const menu = await (await fetch(`../data/restaurants/${slug}/menu.json`)).json();
+    const mv = document.getElementById('mv');
+    const nav = document.getElementById('nav');
+    const show = (it) => {
+      mv.src = `../assets/restaurants/${slug}/${it.model}`;
+      document.getElementById('info').textContent = `${it.name}  -  ${JSON.stringify(it.dimensionsCm)}`;
+      [...nav.children].forEach((b) => b.classList.toggle('on', b.dataset.id === it.id));
+      history.replaceState(null, '', `?r=${slug}&i=${it.id}`);
+    };
+    for (const it of menu.items) {
+      const b = document.createElement('button');
+      b.textContent = it.name;
+      b.dataset.id = it.id;
+      b.onclick = () => show(it);
+      nav.append(b);
+    }
+    const cam = params.get('cam');
+    if (cam) mv.setAttribute('camera-orbit', cam);
+    if (params.get('still')) mv.removeAttribute('auto-rotate');
+    show(menu.items.find((i) => i.id === params.get('i')) || menu.items[0]);
+  </script>
+</body>
+</html>
