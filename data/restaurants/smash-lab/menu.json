@@ -60,7 +60,7 @@
       "ingredients": ["Pão brioche", "Blend bovino 160 g", "Cheddar fatiado", "Bacon defumado crocante", "Maionese de alho assado"],
       "price": 38.0,
       "model": "models/cheddar-bacon.glb",
-      "poster": null,
+      "poster": "img/cheddar-bacon.webp",
       "dimensionsCm": { "diameter": 11, "height": 10 },
       "tags": ["favorito"]
     },
@@ -72,7 +72,7 @@
       "ingredients": ["Pão brioche", "2 blends bovinos de 120 g", "Queijo prato em dobro", "Picles", "Cebola caramelizada", "Molho da casa"],
       "price": 42.0,
       "model": "models/duplo-smash.glb",
-      "poster": null,
+      "poster": "img/duplo-smash.webp",
       "dimensionsCm": { "diameter": 11, "height": 10 },
       "tags": ["para matar a fome"]
     },
@@ -96,7 +96,7 @@
       "ingredients": ["Batata fresca", "Sal marinho", "Páprica defumada"],
       "price": 22.0,
       "model": "models/batata-frita.glb",
-      "poster": null,
+      "poster": "img/batata-frita.webp",
       "dimensionsCm": { "width": 12, "depth": 8, "height": 14 },
       "tags": ["para dividir"]
     },
@@ -108,7 +108,7 @@
       "ingredients": ["Cebola roxa", "Empanado panko", "Molho barbecue defumado"],
       "price": 26.0,
       "model": "models/onion-rings.glb",
-      "poster": null,
+      "poster": "img/onion-rings.webp",
       "dimensionsCm": { "diameter": 9, "height": 8 },
       "tags": []
     },
@@ -120,7 +120,7 @@
       "ingredients": ["Batata frita", "Creme de cheddar", "Bacon crocante em cubos", "Cebolinha"],
       "price": 29.0,
       "model": "models/batata-cheddar-bacon.glb",
-      "poster": null,
+      "poster": "img/batata-cheddar-bacon.webp",
       "dimensionsCm": { "diameter": 14, "height": 6 },
       "tags": ["queridinha"]
     },
@@ -132,7 +132,7 @@
       "ingredients": ["Lata de 350 ml", "Servido gelado"],
       "price": 8.0,
       "model": "models/refrigerante.glb",
-      "poster": null,
+      "poster": "img/refrigerante.webp",
       "dimensionsCm": { "diameter": 6.6, "height": 12.2 },
       "tags": []
     },
@@ -144,7 +144,7 @@
       "ingredients": ["Sorvete de baunilha", "Chocolate belga", "Leite integral", "Chantilly", "Calda de chocolate"],
       "price": 24.0,
       "model": "models/milkshake-chocolate.glb",
-      "poster": null,
+      "poster": "img/milkshake-chocolate.webp",
       "dimensionsCm": { "diameter": 8, "height": 18 },
       "tags": ["cremoso"]
     },
@@ -156,7 +156,7 @@
       "ingredients": ["Limão tahiti", "Leite condensado", "Gelo", "Rodela de limão"],
       "price": 14.0,
       "model": "models/limonada-suica.glb",
-      "poster": null,
+      "poster": "img/limonada-suica.webp",
       "dimensionsCm": { "diameter": 8, "height": 14 },
       "tags": ["refrescante"]
     },
@@ -180,7 +180,7 @@
       "ingredients": ["Sorvete de creme", "Calda de morango", "Chantilly", "Cereja"],
       "price": 18.0,
       "model": "models/sundae-morango.glb",
-      "poster": null,
+      "poster": "img/sundae-morango.webp",
       "dimensionsCm": { "diameter": 9, "height": 12 },
       "tags": []
     }
