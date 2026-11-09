@@ -1,0 +1,16 @@
+{
+  "name": "cardapio-ar",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cardápio digital com realidade aumentada para restaurantes (demo Smash Lab)",
+  "type": "module",
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "models": "node scripts/generate-models.mjs",
+    "validate": "node scripts/validate-models.mjs",
+    "posters": "node scripts/link-posters.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
