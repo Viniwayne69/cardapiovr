@@ -792,6 +792,11 @@ const only = process.argv[3];
 let total = 0;
 for (const item of menu.items) {
   if (only && item.id !== only) continue;
+  // pratos com modelo real (scripts/prepare-scan.mjs) não são sobrescritos pelo placeholder
+  if (!only && fs.existsSync(path.join(ROOT, 'source-models', SLUG, `${item.id}.raw.glb`))) {
+    console.log(`${item.id.padEnd(22)} modelo real (source-models), mantido`);
+    continue;
+  }
   const build = BUILDERS[item.id];
   if (!build) {
     console.warn(`(sem gerador para "${item.id}", mantendo o arquivo existente)`);
