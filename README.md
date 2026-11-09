@@ -78,6 +78,7 @@ scripts/                         geração/validação dos modelos, servidor loc
   - **iPhone:** AR Quick Look, que exige USDZ. Como o `ios-src` não é informado, o **model-viewer gera o USDZ no próprio aparelho, a partir do GLB**, quando o cliente toca em "Ver na mesa" (a documentação do model-viewer descreve esse comportamento). Não há arquivos `.usdz` para manter.
   - **Aparelho sem AR (ex.: computador):** o 3D funciona normalmente e aparece um aviso claro.
 - **Tema (white-label):** o campo `theme` do `menu.json` vira variáveis CSS e define as fontes (Google Fonts). Trocar o JSON troca a marca.
+- **Sem espera no "Ver na mesa":** o visualizador é criado ao abrir o cardápio, os modelos baixam em segundo plano (`js/preload.js`, pulando conexão 2G ou economia de dados) e o modelo do prato começa a carregar ao encostar no cartão. O botão nunca fica apagado: se a pessoa tocar antes do 3D chegar, ele mostra "Preparando…" e abre o AR sozinho assim que ficar pronto.
 - **Navegação:** rotas por hash (`#/prato/<id>`, `#/sobre`, `#/contato`), então o botão voltar do celular fecha o detalhe.
 
 ## Trocar os modelos 3D

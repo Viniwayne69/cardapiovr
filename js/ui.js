@@ -102,7 +102,7 @@ function cardHtml(item, menu, cat, index, highlights) {
 }
 
 // Devolve o conjunto de pôsteres que carregaram (para usar no visualizador 3D).
-export function renderMenu(menu, onOpen) {
+export function renderMenu(menu, onOpen, onPrime) {
   const highlights = (menu.highlightTags ?? DEFAULT_HIGHLIGHTS).map((t) => t.toLowerCase());
   const posterOk = new Set();
   let n = 0;
@@ -130,6 +130,8 @@ export function renderMenu(menu, onOpen) {
       });
       img.addEventListener('error', () => img.remove());
     }
+    // ao encostar no cartão o modelo já começa a carregar, antes do clique terminar
+    if (onPrime) card.addEventListener('pointerdown', () => onPrime(id), { passive: true });
     card.addEventListener('click', () => onOpen(id, card));
   });
   return posterOk;

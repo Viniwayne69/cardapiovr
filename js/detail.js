@@ -27,8 +27,12 @@ export class DetailSheet {
     this.bar = document.getElementById('progressBar');
     this.progress = document.getElementById('progress');
     this.photo = document.getElementById('stagePhoto');
+    this.arLabel = document.getElementById('arLabel');
     this.photoMode = false;
     this.failed = false;
+    this.pending = false; // tocou em "Ver na mesa" antes de o 3D ficar pronto
+    this.mvSrc = null; // último modelo entregue ao visualizador
+    this.viewerReady = null;
     this.mv = null;
     this.item = null;
     this.loaded = false;
@@ -54,7 +58,6 @@ export class DetailSheet {
 
   open(item, trigger) {
     if (this.isOpen && this.item?.id === item.id) return;
-    clearTimeout(this.timers.unload);
     this.item = item;
     this.trigger = trigger ?? this.trigger;
     this.fill(item);
@@ -82,10 +85,7 @@ export class DetailSheet {
     document.documentElement.classList.remove('is-locked');
     this.hideCoach();
     if (this.trigger?.isConnected) this.trigger.focus({ preventScroll: true });
-    this.timers.unload = setTimeout(() => {
-      if (this.mv) this.mv.removeAttribute('src');
-      this.loaded = false;
-    }, 600);
+    // o modelo continua no visualizador: reabrir o mesmo prato (ou voltar a ele) abre na hora
   }
 
   /* ----------------------------- conteúdo -------------------------- */
@@ -119,6 +119,15 @@ export class DetailSheet {
     this.photoMode = on;
     this.stage.classList.toggle('is-photo', on);
     this.photo.hidden = !on;
+    // escondido, o 3D não precisa girar (poupa bateria)
+    if (this.mv) this.mv.autoRotate = !on;
+  }
+
+  // O botão nunca fica apagado: se o 3D ainda não chegou, mostra "Preparando…" e abre o AR sozinho depois.
+  setBusy(on) {
+    this.arBtn.classList.toggle('is-busy', on);
+    this.arBtn.setAttribute('aria-busy', String(on));
+    this.arLabel.textContent = on ? 'Preparando…' : 'Ver na mesa';
   }
 
   resetState() {
@@ -138,14 +147,24 @@ export class DetailSheet {
     this.progress.classList.remove('is-done');
     this.bar.style.transform = 'scaleX(0)';
     this.hint.classList.remove('is-hidden');
-    this.arBtn.classList.add('is-wait');
-    this.arBtn.setAttribute('aria-disabled', 'true');
+    this.pending = false;
+    this.setBusy(false);
+    this.arBtn.classList.remove('is-unsupported');
     this.hideCoach();
   }
 
   /* ------------------------------ 3D -------------------------------- */
 
-  async ensureViewer() {
+  // Um único visualizador, mesmo que warm(), prime() e loadModel() peçam ao mesmo tempo.
+  ensureViewer() {
+    this.viewerReady ??= this.buildViewer().catch((err) => {
+      this.viewerReady = null;
+      throw err;
+    });
+    return this.viewerReady;
+  }
+
+  async buildViewer() {
     if (this.mv) return this.mv;
     const ready = await Promise.race([
       customElements.whenDefined('model-viewer').then(() => true),
@@ -199,6 +218,23 @@ export class DetailSheet {
     return mv;
   }
 
+  // Cria o visualizador antes do primeiro toque (a parte pesada do WebGL), para o detalhe abrir pronto.
+  warm() {
+    return this.ensureViewer().catch(() => {});
+  }
+
+  // No toque no cartão já começa a baixar o modelo, antes mesmo de o detalhe terminar de abrir.
+  prime(item) {
+    if (this.isOpen || !item || this.mvSrc === item.modelUrl) return;
+    this.ensureViewer()
+      .then((mv) => {
+        if (this.isOpen || this.mvSrc === item.modelUrl) return;
+        this.mvSrc = item.modelUrl;
+        mv.src = item.modelUrl;
+      })
+      .catch(() => {});
+  }
+
   async loadModel() {
     const item = this.item;
     if (!item) return;
@@ -212,25 +248,36 @@ export class DetailSheet {
       mv.alt = `Modelo 3D de ${item.name}, em tamanho real`;
       if (item.posterUrl && this.posterOk.has(item.id)) mv.poster = item.posterUrl;
       else mv.removeAttribute('poster');
+      mv.autoRotate = !this.photoMode;
+      const same = this.mvSrc === item.modelUrl;
+      this.mvSrc = item.modelUrl;
       mv.src = item.modelUrl;
+      // o modelo já estava carregado (pré-carregado ou prato reaberto): não vem outro evento "load"
+      if (same && mv.loaded) this.onLoaded();
     } catch {
       this.showError();
     }
   }
 
   onLoaded() {
+    // ignora o "load" de um modelo pré-carregado que não é o do prato aberto
+    if (!this.item || this.mvSrc !== this.item.modelUrl) return;
     this.loaded = true;
     this.loading.hidden = true;
     this.errorBox.hidden = true;
     this.progress.classList.add('is-done');
     this.mv.cameraOrbit = '28deg 74deg 122%';
     this.mv.jumpCameraToGoal?.();
-    this.arBtn.classList.remove('is-wait');
     const supported = !!this.mv.canActivateAR;
-    this.arBtn.setAttribute('aria-disabled', String(!supported));
     this.arBtn.classList.toggle('is-unsupported', !supported);
     const note = document.getElementById('arNote');
     if (note) note.hidden = supported;
+    if (this.pending) {
+      // a pessoa já tinha tocado: abre o AR agora, sem pedir outro toque
+      this.pending = false;
+      this.setBusy(false);
+      this.launchAR();
+    }
   }
 
   showError() {
@@ -238,21 +285,32 @@ export class DetailSheet {
     this.failed = true;
     // com a foto no topo não cobrimos a imagem: o aviso aparece ao tocar em "Ver na mesa"
     if (!this.photoMode) this.errorBox.hidden = false;
-    this.arBtn.classList.add('is-wait');
+    if (this.pending) {
+      this.pending = false;
+      this.setBusy(false);
+      this.toast('Não foi possível carregar o 3D. Toque de novo para tentar');
+    }
   }
 
   /* ------------------------------- AR -------------------------------- */
 
   activateAR() {
     if (this.failed) {
-      this.toast('Não foi possível preparar o 3D. Tentando de novo');
+      this.pending = true;
+      this.setBusy(true);
       this.loadModel();
       return;
     }
     if (!this.mv || !this.loaded) {
-      this.toast('Preparando o modelo, tente em um instante');
+      // ainda carregando: o botão vira "Preparando…" e o AR abre sozinho quando o 3D chegar
+      this.pending = true;
+      this.setBusy(true);
       return;
     }
+    this.launchAR();
+  }
+
+  launchAR() {
     if (!this.mv.canActivateAR) {
       if (this.photoMode) {
         // sem AR (ex.: computador): mostra o 3D no topo, no lugar da foto

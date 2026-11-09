@@ -440,10 +440,11 @@ img { display: block; max-width: 100%; }
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
-  /* o fundo escuro da foto se funde com o brilho do palco e as bordas somem suavemente */
-  mix-blend-mode: lighten;
-  -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, #000 78%, transparent 100%);
-  mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, #000 78%, transparent 100%);
+  /* as quatro bordas somem suavemente, então não aparece o quadrado da foto (sem depender de blend, que falha no iOS) */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent), linear-gradient(to bottom, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent), linear-gradient(to bottom, transparent, #000 8%, #000 92%, transparent);
+  mask-composite: intersect;
   animation: photo-in 0.5s ease both;
 }
 .stage__photo[hidden] { display: none; }
@@ -542,7 +543,18 @@ img { display: block; max-width: 100%; }
   transition: transform 0.2s var(--ease), filter 0.2s, opacity 0.3s, box-shadow 0.3s;
 }
 .cta:active { transform: scale(0.97); }
-.cta.is-wait { opacity: 0.55; filter: saturate(0.7); }
+/* tocou antes do 3D chegar: mostra "Preparando…" e abre o AR sozinho quando ficar pronto */
+.cta.is-busy { pointer-events: none; }
+.cta.is-busy [data-icon] { display: none; }
+.cta.is-busy::before {
+  content: '';
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 3px solid color-mix(in srgb, var(--on-primary) 30%, transparent);
+  border-top-color: var(--on-primary);
+  animation: spin 0.8s linear infinite;
+}
 .cta.is-unsupported { background: var(--surface-2); color: var(--muted); box-shadow: none; }
 .cta--inline { display: inline-flex; width: auto; padding: 0 28px; height: 54px; font-size: 16px; }
 

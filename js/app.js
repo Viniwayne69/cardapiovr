@@ -4,6 +4,7 @@ import { readParams, loadMenu } from './data.js';
 import { hydrateIcons } from './icons.js';
 import { applyTheme, loadFonts, renderHero, renderTabs, renderMenu, renderAbout, renderContact, renderFatal } from './ui.js';
 import { DetailSheet } from './detail.js';
+import { prefetchModels } from './preload.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 
@@ -40,11 +41,15 @@ async function boot() {
   };
 
   // Abrir um prato cria uma entrada no histórico (o botão voltar do celular fecha o detalhe).
-  const posterOk = renderMenu(menu, (id, card) => {
-    sheet.trigger = card;
-    history.pushState({ app: true }, '', `#/prato/${encodeURIComponent(id)}`);
-    route();
-  });
+  const posterOk = renderMenu(
+    menu,
+    (id, card) => {
+      sheet.trigger = card;
+      history.pushState({ app: true }, '', `#/prato/${encodeURIComponent(id)}`);
+      route();
+    },
+    (id) => sheet.prime(byId.get(id)),
+  );
 
   sheet = new DetailSheet({
     menu,
@@ -99,6 +104,10 @@ async function boot() {
   setupTabs();
   route();
   document.body.classList.add('is-ready');
+
+  // Prepara o 3D enquanto a pessoa lê o cardápio, para o "Ver na mesa" já abrir pronto.
+  sheet.warm();
+  prefetchModels(menu.items);
 }
 
 function setupTabs() {
