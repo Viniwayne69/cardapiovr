@@ -1,4 +1,5 @@
-// Tela de detalhe do prato: visualizador 3D (<model-viewer>) e botão "Ver na mesa" (AR).
+// Tela de detalhe do prato: foto no topo (ou 3D girando, se o prato não tem foto) e botão "Ver na mesa" (AR).
+// O <model-viewer> sempre carrega, mesmo escondido, porque é ele que abre a realidade aumentada.
 
 import { icon, hydrateIcons } from './icons.js';
 import { money, dimensions, escapeHtml as esc } from './format.js';
@@ -25,6 +26,9 @@ export class DetailSheet {
     this.hint = document.getElementById('stageHint');
     this.bar = document.getElementById('progressBar');
     this.progress = document.getElementById('progress');
+    this.photo = document.getElementById('stagePhoto');
+    this.photoMode = false;
+    this.failed = false;
     this.mv = null;
     this.item = null;
     this.loaded = false;
@@ -39,6 +43,8 @@ export class DetailSheet {
     document.getElementById('sheetShare').addEventListener('click', () => this.share());
     this.arBtn.addEventListener('click', () => this.activateAR());
     document.getElementById('retryModel').addEventListener('click', () => this.loadModel());
+    // foto que não carrega: cai para o 3D girando no topo
+    this.photo.addEventListener('error', () => this.setPhoto(false));
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && this.isOpen) this.onRequestClose();
     });
@@ -108,7 +114,24 @@ export class DetailSheet {
       ${item.tags?.length ? `<ul class="chips chips--tags">${item.tags.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>` : ''}`;
   }
 
+  // Com foto, o topo mostra a imagem e o 3D fica escondido até o "Ver na mesa".
+  setPhoto(on) {
+    this.photoMode = on;
+    this.stage.classList.toggle('is-photo', on);
+    this.photo.hidden = !on;
+  }
+
   resetState() {
+    const item = this.item;
+    if (item?.posterUrl) {
+      this.photo.alt = `Foto de ${item.name}`;
+      this.photo.src = item.posterUrl;
+      this.setPhoto(true);
+    } else {
+      this.photo.removeAttribute('src');
+      this.setPhoto(false);
+    }
+    this.failed = false;
     this.loaded = false;
     this.loading.hidden = false;
     this.errorBox.hidden = true;
@@ -182,6 +205,7 @@ export class DetailSheet {
     this.errorBox.hidden = true;
     this.loading.hidden = false;
     this.loaded = false;
+    this.failed = false;
     try {
       const mv = await this.ensureViewer();
       if (this.item !== item) return;
@@ -211,18 +235,32 @@ export class DetailSheet {
 
   showError() {
     this.loading.hidden = true;
-    this.errorBox.hidden = false;
+    this.failed = true;
+    // com a foto no topo não cobrimos a imagem: o aviso aparece ao tocar em "Ver na mesa"
+    if (!this.photoMode) this.errorBox.hidden = false;
     this.arBtn.classList.add('is-wait');
   }
 
   /* ------------------------------- AR -------------------------------- */
 
   activateAR() {
+    if (this.failed) {
+      this.toast('Não foi possível preparar o 3D. Tentando de novo');
+      this.loadModel();
+      return;
+    }
     if (!this.mv || !this.loaded) {
-      this.toast('Aguarde o 3D terminar de carregar');
+      this.toast('Preparando o modelo, tente em um instante');
       return;
     }
     if (!this.mv.canActivateAR) {
+      if (this.photoMode) {
+        // sem AR (ex.: computador): mostra o 3D no topo, no lugar da foto
+        this.setPhoto(false);
+        this.scroll.scrollTo({ top: 0, behavior: 'smooth' });
+        this.toast('Aqui o 3D abre em cima. Para ver na mesa, abra no celular');
+        return;
+      }
       this.toast('Seu aparelho não abre a realidade aumentada. Abra no celular');
       document.getElementById('arNote')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;

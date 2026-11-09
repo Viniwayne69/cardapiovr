@@ -48,8 +48,8 @@
       "ingredients": ["Pão brioche selado na manteiga", "Blend bovino 160 g", "Queijo prato", "Alface americana", "Tomate", "Molho da casa"],
       "price": 32.0,
       "model": "models/classico.glb",
-      "poster": null,
-      "dimensionsCm": { "diameter": 11, "height": 9 },
+      "poster": "img/classico.webp",
+      "dimensionsCm": { "diameter": 11, "height": 7.7 },
       "tags": ["mais pedido"]
     },
     {

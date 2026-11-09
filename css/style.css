@@ -429,6 +429,30 @@ img { display: block; max-width: 100%; }
   background: transparent;
   outline: none;
 }
+/* Com foto, o topo mostra a imagem do prato; o 3D carrega escondido e só aparece no "Ver na mesa" (AR). */
+.stage__photo {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  /* o fundo escuro da foto se funde com o brilho do palco e as bordas somem suavemente */
+  mix-blend-mode: lighten;
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, #000 78%, transparent 100%);
+  mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, #000 78%, transparent 100%);
+  animation: photo-in 0.5s ease both;
+}
+.stage__photo[hidden] { display: none; }
+@keyframes photo-in { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: none; } }
+.stage.is-photo .stage__viewer { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
+.stage.is-photo .stage__loading,
+.stage.is-photo .stage__hint,
+.stage.is-photo .progress { display: none; }
+
 .stage__loading, .stage__error {
   position: absolute;
   inset: 0;

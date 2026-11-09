@@ -97,9 +97,19 @@ Boas práticas para o AR ficar certo:
 - **Peso:** ideal abaixo de 1 MB por arquivo, no máximo 5 MB. Texturas grandes pesam, então prefira texturas de até 1024 px.
 - Mantenha `dimensionsCm` no JSON coerente com o modelo, porque é o que aparece para o cliente.
 
+### Modelo gerado a partir de uma foto (grátis)
+
+Um modelo realista pode sair de uma foto do prato com o **TRELLIS**, que roda de graça no Hugging Face (`huggingface.co/spaces/trellis-community/TRELLIS`): suba a foto, clique em "Generate & Extract GLB" e baixe o GLB. Esse arquivo vem em escala arbitrária, sem normais e com textura PNG pesada, então passe pelo script de preparo:
+
+```bash
+node scripts/prepare-scan.mjs caminho/do/arquivo.glb <id-do-prato>
+```
+
+O script escala para o diâmetro/largura de `dimensionsCm`, centraliza e apoia a base em y=0, recalcula as normais, ajusta o material, troca a textura por JPEG e grava em `assets/restaurants/<slug>/models/`. O arquivo original fica em `source-models/<slug>/<id>.raw.glb`, e `npm run models` passa a não sobrescrever esse prato. A altura sai da proporção do modelo: se o script avisar que ela difere de `dimensionsCm.height`, ajuste o `menu.json`.
+
 ## Colocar as imagens dos pratos
 
-As imagens aparecem como miniatura na lista e como pré-visualização enquanto o 3D carrega. Sem imagem, o card mostra um ícone da categoria (sem erro no console).
+As imagens aparecem como miniatura na lista e como foto principal no topo do detalhe. Quando o prato tem foto, o 3D carrega escondido e só aparece no "Ver na mesa" (AR); em aparelhos sem AR, como o computador, o botão troca a foto pelo 3D girando. Sem imagem, o card mostra um ícone da categoria e o detalhe mostra o 3D girando no topo (sem erro no console).
 
 1. Salve cada imagem em `assets/restaurants/<slug>/img/<id-do-prato>.webp` (também aceita `.png`, `.jpg` e `.avif`).
 2. Rode `npm run posters`. O script liga ao `menu.json` apenas as imagens que existem.
