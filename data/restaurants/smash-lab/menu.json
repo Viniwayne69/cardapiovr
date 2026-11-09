@@ -1,0 +1,188 @@
+{
+  "slug": "smash-lab",
+  "name": "Smash Lab",
+  "tagline": "Hambúrguer artesanal",
+  "hint": "Toque em um prato e veja ele na sua mesa",
+  "about": {
+    "title": "Sobre a Smash Lab",
+    "text": "Hambúrguer artesanal feito na chapa, com blend da casa, pães selados na manteiga e ingredientes frescos todos os dias",
+    "highlights": [
+      { "title": "Smash de verdade", "text": "Carne prensada na chapa bem quente para formar aquela crosta crocante" },
+      { "title": "Pão de brioche", "text": "Selado na manteiga na hora para chegar macio e dourado à sua mesa" },
+      { "title": "Ingredientes frescos", "text": "Vegetais e molhos preparados diariamente na nossa cozinha" }
+    ]
+  },
+  "contact": {
+    "address": "Rua das Brasas, 128, Centro",
+    "hours": [
+      { "days": "Segunda a quinta", "time": "18h às 23h" },
+      { "days": "Sexta e sábado", "time": "18h à 1h" },
+      { "days": "Domingo", "time": "17h às 22h" }
+    ],
+    "whatsapp": { "label": "(11) 99999-0000", "number": "5511999990000" },
+    "instagram": { "label": "@smashlab.demo", "url": "https://instagram.com/smashlab.demo" }
+  },
+  "theme": {
+    "primary": "#E8571F",
+    "accent": "#F2B33D",
+    "background": "#17100B",
+    "surface": "#241A13",
+    "text": "#F8EEDF",
+    "fontDisplay": "Bricolage Grotesque",
+    "fontBody": "DM Sans"
+  },
+  "currency": "BRL",
+  "highlightTags": ["mais pedido", "favorito", "queridinha"],
+  "categories": [
+    { "id": "burgers", "name": "Hambúrgueres", "icon": "burger" },
+    { "id": "sides", "name": "Porções", "icon": "fries" },
+    { "id": "drinks", "name": "Bebidas", "icon": "cup" },
+    { "id": "desserts", "name": "Sobremesas", "icon": "icecream" }
+  ],
+  "items": [
+    {
+      "id": "classico",
+      "category": "burgers",
+      "name": "Clássico da Casa",
+      "description": "Blend bovino smashado na chapa, queijo prato derretido, alface, tomate e molho da casa no pão brioche.",
+      "ingredients": ["Pão brioche selado na manteiga", "Blend bovino 160 g", "Queijo prato", "Alface americana", "Tomate", "Molho da casa"],
+      "price": 32.0,
+      "model": "models/classico.glb",
+      "poster": null,
+      "dimensionsCm": { "diameter": 11, "height": 9 },
+      "tags": ["mais pedido"]
+    },
+    {
+      "id": "cheddar-bacon",
+      "category": "burgers",
+      "name": "Cheddar Bacon",
+      "description": "Smash crocante com cheddar cremoso e fatias de bacon defumado, finalizado com maionese de alho assado.",
+      "ingredients": ["Pão brioche", "Blend bovino 160 g", "Cheddar fatiado", "Bacon defumado crocante", "Maionese de alho assado"],
+      "price": 38.0,
+      "model": "models/cheddar-bacon.glb",
+      "poster": null,
+      "dimensionsCm": { "diameter": 11, "height": 10 },
+      "tags": ["favorito"]
+    },
+    {
+      "id": "duplo-smash",
+      "category": "burgers",
+      "name": "Duplo Smash",
+      "description": "Dois blends bem passados na chapa, queijo duplo, picles e cebola caramelizada para quem tem fome de verdade.",
+      "ingredients": ["Pão brioche", "2 blends bovinos de 120 g", "Queijo prato em dobro", "Picles", "Cebola caramelizada", "Molho da casa"],
+      "price": 42.0,
+      "model": "models/duplo-smash.glb",
+      "poster": null,
+      "dimensionsCm": { "diameter": 11, "height": 10 },
+      "tags": ["para matar a fome"]
+    },
+    {
+      "id": "veggie",
+      "category": "burgers",
+      "name": "Veggie Burger",
+      "description": "Hambúrguer de grão-de-bico e beterraba, queijo, rúcula, tomate e maionese verde no pão integral.",
+      "ingredients": ["Pão integral com sementes", "Hambúrguer de grão-de-bico e beterraba", "Queijo prato", "Rúcula", "Tomate", "Maionese verde de ervas"],
+      "price": 36.0,
+      "model": "models/veggie.glb",
+      "poster": null,
+      "dimensionsCm": { "diameter": 11, "height": 8.5 },
+      "tags": ["vegetariano"]
+    },
+    {
+      "id": "batata-frita",
+      "category": "sides",
+      "name": "Batata Frita",
+      "description": "Batatas douradas e sequinhas, cortadas na casa e temperadas com sal e páprica defumada.",
+      "ingredients": ["Batata fresca", "Sal marinho", "Páprica defumada"],
+      "price": 22.0,
+      "model": "models/batata-frita.glb",
+      "poster": null,
+      "dimensionsCm": { "width": 12, "depth": 8, "height": 14 },
+      "tags": ["para dividir"]
+    },
+    {
+      "id": "onion-rings",
+      "category": "sides",
+      "name": "Onion Rings",
+      "description": "Anéis de cebola empanados na farinha panko, bem crocantes por fora e macios por dentro.",
+      "ingredients": ["Cebola roxa", "Empanado panko", "Molho barbecue defumado"],
+      "price": 26.0,
+      "model": "models/onion-rings.glb",
+      "poster": null,
+      "dimensionsCm": { "diameter": 9, "height": 8 },
+      "tags": []
+    },
+    {
+      "id": "batata-cheddar-bacon",
+      "category": "sides",
+      "name": "Batata com Cheddar e Bacon",
+      "description": "Batata frita coberta com cheddar cremoso, farofa de bacon crocante e cebolinha fresca.",
+      "ingredients": ["Batata frita", "Creme de cheddar", "Bacon crocante em cubos", "Cebolinha"],
+      "price": 29.0,
+      "model": "models/batata-cheddar-bacon.glb",
+      "poster": null,
+      "dimensionsCm": { "diameter": 14, "height": 6 },
+      "tags": ["queridinha"]
+    },
+    {
+      "id": "refrigerante",
+      "category": "drinks",
+      "name": "Refrigerante lata",
+      "description": "Refrigerante gelado em lata de 350 ml, para acompanhar o seu hambúrguer.",
+      "ingredients": ["Lata de 350 ml", "Servido gelado"],
+      "price": 8.0,
+      "model": "models/refrigerante.glb",
+      "poster": null,
+      "dimensionsCm": { "diameter": 6.6, "height": 12.2 },
+      "tags": []
+    },
+    {
+      "id": "milkshake-chocolate",
+      "category": "drinks",
+      "name": "Milkshake de Chocolate",
+      "description": "Sorvete de baunilha batido com chocolate belga, coroado com chantilly e calda de chocolate.",
+      "ingredients": ["Sorvete de baunilha", "Chocolate belga", "Leite integral", "Chantilly", "Calda de chocolate"],
+      "price": 24.0,
+      "model": "models/milkshake-chocolate.glb",
+      "poster": null,
+      "dimensionsCm": { "diameter": 8, "height": 18 },
+      "tags": ["cremoso"]
+    },
+    {
+      "id": "limonada-suica",
+      "category": "drinks",
+      "name": "Limonada Suíça",
+      "description": "Limão tahiti batido com a casca, leite condensado e gelo, refrescante e cremosa na medida.",
+      "ingredients": ["Limão tahiti", "Leite condensado", "Gelo", "Rodela de limão"],
+      "price": 14.0,
+      "model": "models/limonada-suica.glb",
+      "poster": null,
+      "dimensionsCm": { "diameter": 8, "height": 14 },
+      "tags": ["refrescante"]
+    },
+    {
+      "id": "brownie-sorvete",
+      "category": "desserts",
+      "name": "Brownie com Sorvete",
+      "description": "Brownie de chocolate meio amargo servido quentinho, com sorvete de creme e calda cremosa por cima.",
+      "ingredients": ["Brownie de chocolate meio amargo", "Sorvete de creme", "Calda de chocolate", "Nozes"],
+      "price": 22.0,
+      "model": "models/brownie-sorvete.glb",
+      "poster": null,
+      "dimensionsCm": { "diameter": 14, "height": 9 },
+      "tags": ["quentinho"]
+    },
+    {
+      "id": "sundae-morango",
+      "category": "desserts",
+      "name": "Sundae de Morango",
+      "description": "Sorvete de creme com calda de morango, chantilly e uma cereja no topo, na taça gelada.",
+      "ingredients": ["Sorvete de creme", "Calda de morango", "Chantilly", "Cereja"],
+      "price": 18.0,
+      "model": "models/sundae-morango.glb",
+      "poster": null,
+      "dimensionsCm": { "diameter": 9, "height": 12 },
+      "tags": []
+    }
+  ]
+}
